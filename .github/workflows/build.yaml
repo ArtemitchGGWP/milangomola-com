@@ -27,7 +27,5 @@ jobs:
         run: |
           COMMIT_SHA=${{ steps.vars.outputs.sha }}
           docker login registry.hub.docker.com -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
-          docker build -f Dockerfile -t registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest .
-          docker tag registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${COMMIT_SHA}
-          docker push registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest
+          docker build -f Dockerfile -t registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${COMMIT_SHA} .
           docker push registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${COMMIT_SHA}
