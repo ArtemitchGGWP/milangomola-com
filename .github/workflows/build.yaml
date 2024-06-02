@@ -16,11 +16,18 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
+      - name: set up Git
+        run: git fetch --tags
+
+      - name: get commit hash
+        id: vars
+        run: echo "::set-output name=sha::$(git rev-parse --short HEAD)"
+
       - name: build
         run: |
-          VERSION=$(git describe | awk -F '-' '{print $1}')
+          COMMIT_SHA=${{ steps.vars.outputs.sha }}
           docker login registry.hub.docker.com -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
           docker build -f Dockerfile -t registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest .
-          docker tag registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${VERSION}
+          docker tag registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${COMMIT_SHA}
           docker push registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:latest
-          docker push registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${VERSION}
+          docker push registry.hub.docker.com/artemitchggwp/${{ github.event.repository.name }}:${COMMIT_SHA}
