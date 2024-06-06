@@ -316,3 +316,19 @@
 
 .icon-dribbble:before {
   content: "\e063"; }
+
+.icon-discord:before {
+  content: "\f392"; 
+}
+
+.fa.fab-discord {
+  font-size: 24px; /* Adjust size as needed */
+  color: #000000;  /* Discord brand color */
+}
+
+.fa.fab-steam {
+  font-size: 24px; /* Adjust size as needed */
+  color: #000000;  /* Steam brand color (or choose your own) */
+}
+
+

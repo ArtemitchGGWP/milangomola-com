@@ -18,11 +18,21 @@
 <link rel="stylesheet" href="css/animate.min.css">
 <link rel="stylesheet" href="css/font-icon.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+<style>
+  .banner-text h1, .banner-text p {
+      color: #fff; /* White text */
+      text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9), 
+                   -1px -1px 0 rgba(0, 0, 0, 0.5), /* Inline shadow */
+                   1px 1px 0 rgba(0, 0, 0, 0.5); /* Inline shadow */
+  }
+</style>
+
+</head>
 <body>
 <!-- header section -->
-<section class="banner" role="banner"> 
+<section class="banner" id="banner" role="banner"> 
   <!--header navigation -->
   <header id="header">
     <div class="header-content clearfix"> <a class="logo" href="#"><img src="images/logo.png" alt=""></a>
@@ -31,7 +41,6 @@
           <li><a href="#intro">Intro</a></li>
           <li><a href="#services">Services</a></li>
           <li><a href="#works">Works</a></li>
-          <li><a href="#teams">Our Team</a></li>
           <li><a href="#testimonials">Testimonials</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
@@ -237,9 +246,7 @@
   </div>
 </section>
 <!-- work section --> 
-<!-- our team section -->
 
-<!-- our team section --> 
 <!-- Testimonials section -->
 <section id="testimonials" class="section testimonials no-padding">
   <div class="container-fluid">
@@ -288,8 +295,9 @@
 <section id="contact" class="section quote">
   <div class="container">
     <div class="col-md-8 col-md-offset-2 text-center">
-      <h3>Looking for a new brand? Let's work together!</h3>
-      <a href="#" class="btn btn-large">Get Quotation</a> </div>
+      <h3>If you have any questions, message me.</h3>
+      <a href="mailto:MilanGomola.official@gmail.com" class="btn btn-large">Write Email</a>
+    </div>
   </div>
 </section>
 <!-- Get a quote section --> 
@@ -299,11 +307,9 @@
     <div class="container">
       <div class="row">
         <div class="footer-col col-md-6">
-          <h5>Our Office Location</h5>
-          <p>Collins Street West Victoria 8007 Australia.<br>
-            1800 1234 56789 / 98532100987<br>
-            support@flosix.com</p>
-          <p>Copyright © 2024 Flosix Inc. All Rights Reserved. Made with <i class="fa fa-heart pulse"></i> by <a href="http://www.designstub.com/">Designstub</a></p>
+          <h5>How can you contact me?</h5>
+          <p>+421 948 592 268<br>
+            MilanGomola.official@gmail.com</p>
         </div>
         <div class="footer-col col-md-3">
           <h5>Services We Offer</h5>
@@ -320,10 +326,13 @@
         <div class="footer-col col-md-3">
           <h5>Share with Love</h5>
           <ul class="footer-share">
-            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+            <li><a href="https://www.facebook.com/milan.gomola"><i class="fab fa-facebook"></i></a></li>
+            <li><a href="https://x.com/artemitch"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://www.linkedin.com/in/milan-gomola-0307a3253/"><i class="fab fa-linkedin"></i></a></li>
+            <li><a href="https://discord.gg/vttfuZKvDZ"><i class="fab fa-discord"></i></a></li>
+            <li><a href="https://steamcommunity.com/profiles/76561198066497801/"><i class="fab fa-steam"></i></a></li>
+            <li><a href="https://www.youtube.com/artemitch" target="_blank"><i class="fab fa-youtube"></i></a></li>
+          </ul>
           </ul>
         </div>
       </div>
@@ -341,5 +350,42 @@
 <script src="js/retina.min.js"></script> 
 <script src="js/modernizr.js"></script> 
 <script src="js/main.js"></script>
+<script>
+  $(document).ready(function() {
+      var bannerImages1 = ['images/banner1.jpg', 'images/banner2.jpg', 'images/banner3.jpg', 'images/banner4.jpg', 'images/banner5.jpg'];
+      var bannerImages2 = ['images/banner6.jpg', 'images/banner7.jpg', 'images/banner8.jpg'];
+      var bannerElement = $('#banner');
+      var banner2Index = 0;
+
+      function getRandomImage(images) {
+          return images[Math.floor(Math.random() * images.length)];
+      }
+
+      function changeBannerImage() {
+          // First sequence: random images changing every 100ms
+          var sequence1 = setInterval(function() {
+              bannerElement.css('background-image', 'url(' + getRandomImage(bannerImages1) + ')');
+          }, 75); // Change image every 75ms for rapid sequence
+
+          // Second sequence: play images 6 to 8 in order every 5 to 10 seconds
+          setTimeout(function() {
+              clearInterval(sequence1);
+              var sequence2 = setInterval(function() {
+                  bannerElement.css('background-image', 'url(' + bannerImages2[banner2Index] + ')');
+                  banner2Index = (banner2Index + 1) % bannerImages2.length;
+              }, 50); // Change image every 50ms for rapid sequence
+
+              setTimeout(function() {
+                  clearInterval(sequence2);
+                  changeBannerImage(); // Restart the sequence
+              }, 150); // Run the second sequence for 150ms
+          }, Math.random() * 5000 + 5000); // Random time between 5 and 10 seconds
+      }
+
+      changeBannerImage(); // Initial call
+  });
+</script>
+
+
 </body>
 </html>
