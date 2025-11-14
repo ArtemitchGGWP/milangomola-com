@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="css/font-icon.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
   .banner-text h1, .banner-text p {
@@ -27,10 +28,159 @@
                    -1px -1px 0 rgba(0, 0, 0, 0.5), /* Inline shadow */
                    1px 1px 0 rgba(0, 0, 0, 0.5); /* Inline shadow */
   }
+  
+  #banner {
+      background-color: #333 !important; /* Fallback dark color to prevent white flashes */
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
+      position: relative;
+  }
+  
+    /* Banner pseudo-overlay should be transparent; the page backdrop covers
+     the initial fade so the pseudo-element must not block the background image. */
+    #banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0); /* transparent */
+      z-index: 2;
+      pointer-events: none;
+    }
+
+  /* Keep banner children (header, content) above overlay */
+  #banner > header,
+  #banner > .container {
+      position: relative;
+      z-index: 3;
+  }
+
+  /* Language selection modal */
+  .language-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10002;
+  }
+  
+  .language-modal-content {
+      background-color: #fff;
+      padding: 60px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .language-modal-content h2 {
+      margin-bottom: 40px;
+      color: #2d3033;
+  }
+  
+  .language-buttons {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+  }
+  
+  .language-btn {
+      padding: 15px 40px;
+      font-size: 18px;
+      border: 2px solid #3bc492;
+      background-color: #3bc492;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 600;
+      transition: all 0.3s;
+  }
+  
+  .language-btn:hover {
+      background-color: #2aa676;
+      border-color: #2aa676;
+  }
+
+    .language-btn.selected {
+      box-shadow: 0 6px 18px rgba(43, 160, 116, 0.15);
+      transform: translateY(-2px);
+    }
+
+  /* Language-specific fonts */
+  body.english {
+      font-family: "Source Sans Pro", sans-serif;
+  }
+  
+  body.japanese {
+      font-family: "Noto Sans JP", sans-serif;
+  }
+  
+  .lang-hidden {
+      display: none;
+  }
+
+    /* Backdrop used during fade-in so underlying sections keep their original backgrounds */
+    #pageBackdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000; /* color used during fade-in */
+      z-index: 10001; /* sit above page content but below the modal (modal is 10002) */
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+
+    body.language-selected #pageBackdrop {
+      opacity: 0;
+      transition: opacity 1s ease 0.3s;
+      pointer-events: none;
+    }
+
+    /* Use a simple opacity transition for the page content. This ensures a
+       single composited opacity change (0 -> 1) rather than a keyframe animation
+       which can interact with other transitions and produce brightening. */
+    #pageContent {
+      opacity: 0;
+      transition: opacity 700ms ease;
+    }
+
+    /* When language is confirmed, set opacity to 1. The backdrop transition is
+       synchronized so the result is a clean fade from black to page content. */
+    body.language-selected #pageContent {
+      opacity: 1;
+    }
+
+    /* Keep the backdrop transition duration in sync with #pageContent. */
+    #pageBackdrop {
+      transition: opacity 700ms ease;
+    }
 </style>
 
 </head>
 <body>
+<!-- Language Selection Modal -->
+<div class="language-modal" id="languageModal">
+  <div class="language-modal-content">
+    <h2>Select Language / 言語を選択</h2>
+    <div class="language-buttons">
+      <button class="language-btn" data-lang="english">English</button>
+      <button class="language-btn" data-lang="japanese">日本語</button>
+    </div>
+  </div>
+</div>
+<!-- Page content wrapper: keeps modal outside the faded area so it's always visible -->
+<div id="pageBackdrop" aria-hidden="true"></div>
+<div id="pageContent">
 <!-- header section -->
 <section class="banner" id="banner" role="banner"> 
   <!--header navigation -->
@@ -38,11 +188,11 @@
     <div class="header-content clearfix"> <a class="logo" href="#"><img src="images/logo.png" alt=""></a>
       <nav class="navigation" role="navigation">
         <ul class="primary-nav">
-          <li><a href="#intro">Info</a></li>
-          <li><a href="#services">Interests</a></li>
-          <li><a href="#works">Projects</a></li>
-          <li><a href="#testimonials">Testimonials</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#intro"><span class="lang-en">Info</span><span class="lang-ja lang-hidden">情報</span></a></li>
+          <li><a href="#services"><span class="lang-en">Interests</span><span class="lang-ja lang-hidden">興味</span></a></li>
+          <li><a href="#works"><span class="lang-en">Projects</span><span class="lang-ja lang-hidden">プロジェクト</span></a></li>
+          <li><a href="#testimonials"><span class="lang-en">Testimonials</span><span class="lang-ja lang-hidden">推薦文</span></a></li>
+          <li><a href="#contact"><span class="lang-en">Contact</span><span class="lang-ja lang-hidden">連絡先</span></a></li>
         </ul>
       </nav>
       <a href="#" class="nav-toggle">Menu<span></span></a> </div>
@@ -53,7 +203,7 @@
     <div class="col-md-10 col-md-offset-1">
       <div class="banner-text text-center">
         <h1>Milan Gomola</h1>
-        <p>Personal Page</p>
+        <p><span class="lang-en">Personal Page</span><span class="lang-ja lang-hidden">個人ページ</span></p>
         <nav role="navigation"> <a href="#services" class="banner-btn"><img src="images/down-arrow.png" alt=""></a></nav>
       </div>
       <!-- banner text --> 
@@ -73,9 +223,9 @@
             </div>
             <div class="col-md-6">
               <blockquote>
-                <h1>Welcome to my Personal Page</h1>
-                <p>Hello my name is Milan and I am currently 30 years old and I am on my path to become a C++ developer. From my childhood I loved Videogames and this passion remains even now and what is even better than playing a game? Making one! That is why I decided to learn the whole language of C++ and its standard libraries including ones that include Unreal Engine 5. I know that with the combination of C++ and Unreal Engine I can make any game in the world.</p>
-                <p>If you want to learn more about me or my work go through the other sections of this Personal Page.</p>
+                <h1><span class="lang-en">Welcome to my Personal Page</span><span class="lang-ja lang-hidden">私の個人ページへようこそ</span></h1>
+                <p><span class="lang-en">Hello my name is Milan and I am currently 30 years old and I am on my path to become a C++ developer. From my childhood I loved Videogames and this passion remains even now and what is even better than playing a game? Making one! That is why I decided to learn the whole language of C++ and its standard libraries including ones that include Unreal Engine 5. I know that with the combination of C++ and Unreal Engine I can make any game in the world.</span><span class="lang-ja lang-hidden">こんにちは、私の名前はミランで、現在30歳です。C++開発者になるための道を歩んでいます。幼い頃からビデオゲームが大好きで、その情熱は今も変わりません。ゲームをプレイするより良いことは何でしょうか？ゲームを作ることです！そのため、C++の言語全体とUnreal Engine 5を含む標準ライブラリを学ぶことにしました。C++とUnreal Engineの組み合わせで、世界中のあらゆるゲームを作ることができると確信しています。</span></p>
+                <p><span class="lang-en">If you want to learn more about me or my work go through the other sections of this Personal Page.</span><span class="lang-ja lang-hidden">私についてまたは私の仕事についてもっと知りたい場合は、この個人ページの他のセクションを参照してください。</span></p>
                 </blockquote>
             </div>
           </li>
@@ -295,8 +445,8 @@
 <section id="contact" class="section quote">
   <div class="container">
     <div class="col-md-8 col-md-offset-2 text-center">
-      <h3>If you have any questions, don't hesitate to contact me.</h3>
-      <a href="mailto:MilanGomola.official@gmail.com" class="btn btn-large">Write Email</a>
+      <h3><span class="lang-en">If you have any questions, don't hesitate to contact me.</span><span class="lang-ja lang-hidden">ご質問がある場合は、遠慮なくお問い合わせください。</span></h3>
+      <a href="mailto:MilanGomola.official@gmail.com" class="btn btn-large"><span class="lang-en">Write Email</span><span class="lang-ja lang-hidden">メールを書く</span></a>
     </div>
   </div>
 </section>
@@ -307,12 +457,12 @@
     <div class="container">
       <div class="row">
         <div class="footer-col col-md-6">
-          <h5>My Contacts</h5>
+          <h5><span class="lang-en">My Contacts</span><span class="lang-ja lang-hidden">私の連絡先</span></h5>
           <p>+421 948 592 268<br>
             MilanGomola.official@gmail.com</p>
         </div>
         <div class="footer-col col-md-3">
-          <h5>Return to beginning</h5>
+          <h5><span class="lang-en">Return to beginning</span><span class="lang-ja lang-hidden">始めに戻る</span></h5>
           <p>
           <ul>
             <li><a href="#">Click Here</a></li>
@@ -320,7 +470,7 @@
           </p>
         </div>
         <div class="footer-col col-md-3">
-          <h5>Other Media</h5>
+          <h5><span class="lang-en">Other Media</span><span class="lang-ja lang-hidden">その他のメディア</span></h5>
           <ul class="footer-share">
             <li><a href="https://www.linkedin.com/in/milan-gomola-0307a3253/" target="_blank"><i class="fab fa-linkedin"></i></a></li>
             <li><a href="https://github.com/ArtemitchGGWP" target="_blank"><i class="fab fa-github"></i></a></li>
@@ -334,6 +484,9 @@
 </footer>
 <!-- Footer section --> 
 <!-- JS FILES --> 
+
+</div><!-- /#pageContent -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> 
 <script src="js/bootstrap.min.js"></script> 
 <script src="js/jquery.flexslider-min.js"></script> 
@@ -341,39 +494,188 @@
 <script src="js/retina.min.js"></script> 
 <script src="js/modernizr.js"></script> 
 <script src="js/main.js"></script>
+
+<!-- Language Switching Script -->
+<script>
+  $(document).ready(function() {
+    // Initialize language from localStorage or default to English
+    var currentLang = localStorage.getItem('selectedLanguage');
+
+    // If language was previously selected, apply it but DO NOT auto-hide the modal.
+    // The modal should remain visible until the user explicitly confirms.
+    if (currentLang) {
+      setLanguage(currentLang);
+      // Visually mark the stored choice so the user sees what's currently set
+      $('.language-btn').removeClass('selected');
+      $('.language-btn[data-lang="' + currentLang + '"]').addClass('selected');
+    }
+    // Modal remains visible for user selection regardless of stored preference
+      
+    // Language selection buttons in modal
+    $('.language-btn').on('click', function(e) {
+      e.preventDefault();
+      var lang = $(this).data('lang');
+      setLanguage(lang);
+      localStorage.setItem('selectedLanguage', lang);
+
+      // Wait for the banner's current background image to be painted before revealing the page.
+      // This prevents a flash of white while images are still loading.
+      function revealPage() {
+        $('body').addClass('language-selected');
+        $('#languageModal').fadeOut(300);
+      }
+
+      // Determine the banner image URL from computed style or fallback to the exposed first image
+      var bannerEl = document.getElementById('banner');
+      var bgUrl = null;
+      if (bannerEl) {
+        var cs = window.getComputedStyle(bannerEl);
+        var bg = cs.backgroundImage || '';
+        var m = bg.match(/url\((['"]?)(.*?)\1\)/);
+        if (m && m[2]) bgUrl = m[2];
+      }
+      if (!bgUrl && window._bannerFirstImage) bgUrl = window._bannerFirstImage;
+
+      if (bgUrl) {
+        var img = new Image();
+        var done = false;
+        function finish() {
+          if (done) return; done = true; revealPage();
+        }
+        img.onload = finish;
+        img.onerror = finish; // proceed even if load fails
+        // Safety fallback in case load event doesn't fire
+        var to = setTimeout(function(){ finish(); }, 2000);
+        img.src = bgUrl;
+      } else {
+        // No banner image found; reveal immediately
+        revealPage();
+      }
+    });
+      
+    function setLanguage(lang) {
+        if (lang === 'japanese') {
+            $('body').removeClass('english').addClass('japanese');
+            $('.lang-en').addClass('lang-hidden');
+            $('.lang-ja').removeClass('lang-hidden');
+        } else {
+            $('body').removeClass('japanese').addClass('english');
+            $('.lang-en').removeClass('lang-hidden');
+            $('.lang-ja').addClass('lang-hidden');
+        }
+    }
+  });
+</script>
+
 <script>
   $(document).ready(function() {
       var bannerImages1 = ['images/banner1.jpg', 'images/banner2.jpg', 'images/banner3.jpg', 'images/banner4.jpg', 'images/banner5.jpg'];
       var bannerImages2 = ['images/banner6.jpg', 'images/banner7.jpg', 'images/banner8.jpg'];
       var bannerElement = $('#banner');
-      var banner2Index = 0;
+      var lastImage1 = null;
+      var randomInterval = null;
+      var cinematicInterval = null;
+      var phaseTimeout = null;
+      var firstCycle = true;
+      var isInCinematicPhase = false;
+      var imageCache = {};
 
-      function getRandomImage(images) {
-          return images[Math.floor(Math.random() * images.length)];
+      // Preload all images
+      bannerImages1.concat(bannerImages2).forEach(function(src) {
+          var img = new Image();
+          img.src = src;
+          imageCache[src] = img;
+      });
+
+        // Expose banner image info so other scripts can wait for it to be painted
+        window._bannerImagesAll = bannerImages1.concat(bannerImages2);
+
+      function getRandomImageNoRepeat(images, lastImage) {
+          if (images.length === 1) return images[0];
+          var newImage = lastImage;
+          while (newImage === lastImage) {
+              newImage = images[Math.floor(Math.random() * images.length)];
+          }
+          return newImage;
       }
 
-      function changeBannerImage() {
-          // First sequence: random images changing every 100ms
-          var sequence1 = setInterval(function() {
-              bannerElement.css('background-image', 'url(' + getRandomImage(bannerImages1) + ')');
-          }, 75); // Change image every 75ms for rapid sequence
-
-          // Second sequence: play images 6 to 8 in order every 5 to 10 seconds
-          setTimeout(function() {
-              clearInterval(sequence1);
-              var sequence2 = setInterval(function() {
-                  bannerElement.css('background-image', 'url(' + bannerImages2[banner2Index] + ')');
-                  banner2Index = (banner2Index + 1) % bannerImages2.length;
-              }, 50); // Change image every 50ms for rapid sequence
-
-              setTimeout(function() {
-                  clearInterval(sequence2);
-                  changeBannerImage(); // Restart the sequence
-              }, 150); // Run the second sequence for 150ms
-          }, Math.random() * 5000 + 5000); // Random time between 5 and 10 seconds
+      function clearAllTimers() {
+          if (randomInterval) {
+              clearInterval(randomInterval);
+              randomInterval = null;
+          }
+          if (cinematicInterval) {
+              clearInterval(cinematicInterval);
+              cinematicInterval = null;
+          }
+          if (phaseTimeout) {
+              clearTimeout(phaseTimeout);
+              phaseTimeout = null;
+          }
       }
 
-      changeBannerImage(); // Initial call
+      function startRandomPhase() {
+          clearAllTimers();
+          isInCinematicPhase = false;
+
+          // Set initial image
+          var img = getRandomImageNoRepeat(bannerImages1, lastImage1);
+          lastImage1 = img;
+          bannerElement.css('background-image', 'url(' + img + ')');
+
+          // 1–5 fast random flicker, no repeat in a row
+          randomInterval = setInterval(function() {
+              var img = getRandomImageNoRepeat(bannerImages1, lastImage1);
+              lastImage1 = img;
+              bannerElement.css('background-image', 'url(' + img + ')');
+          }, 75);
+
+          // First cycle: minimum ~5s, later cycles: 5–10s
+          var delay = firstCycle ? 5000 : (5000 + Math.random() * 5000);
+          firstCycle = false;
+
+          phaseTimeout = setTimeout(function() {
+              startCinematicPhase();
+          }, delay);
+      }
+
+      function startCinematicPhase() {
+          // Prevent multiple cinematic phases from starting
+          if (isInCinematicPhase) return;
+          
+          clearAllTimers();
+          isInCinematicPhase = true;
+
+          // Show "Artemitch" during cinematic sequence
+          bannerElement.find('.banner-text h1').text('Artemitch');
+
+          var idx = 0;
+          cinematicInterval = setInterval(function() {
+              bannerElement.css('background-image', 'url(' + bannerImages2[idx] + ')');
+              idx++;
+
+              // After 6,7,8 (3 frames), go back to random
+              if (idx >= bannerImages2.length) {
+                  clearInterval(cinematicInterval);
+                  cinematicInterval = null;
+                  // Restore "Milan Gomola" when returning to random phase
+                  bannerElement.find('.banner-text h1').text('Milan Gomola');
+                  startRandomPhase();
+              }
+          }, 150); // speed of 6–8 burst (150ms per image = 450ms total)
+      }
+
+      // Set first image immediately on page load
+      var firstImg = getRandomImageNoRepeat(bannerImages1, lastImage1);
+      lastImage1 = firstImg;
+      bannerElement.css('background-image', 'url(' + firstImg + ')');
+      // expose the initial banner image URL for other scripts
+      window._bannerFirstImage = firstImg;
+
+      // Kick things off with 1–5 only
+      setTimeout(function() {
+          startRandomPhase();
+      }, 100);
   });
 </script>
 
